@@ -1,8 +1,4 @@
-// Este arquivo contém a lista de posts e o tipo de dado do post
-// para que possa ser usado em todas as páginas do blog.
 
-// O tipo de dado para um post do blog.
-// Usamos `export` para que ele possa ser importado em outros arquivos.
 export type BlogPost = {
   id: number;
   slug: string;
@@ -14,15 +10,14 @@ export type BlogPost = {
   thumbnailUrl?: string;
 };
 
-// A lista completa de posts do blog.
-// Usamos `export` para que as páginas de lista e de detalhes possam acessá-la.
+
 export const blogPosts: BlogPost[] = [
   {
     id: 1,
     slug: "por-que-usar-typescript",
     title: "Por Que Você Deveria Usar TypeScript?",
     author: "Fernanda Rosas",
-    date: "16 de Setembro, 2024",
+    date: "16 de Setembro, 2025",
     summary:
       "Descubra como o TypeScript pode elevar a qualidade do seu código, tornando-o mais seguro, legível e escalável. Um guia essencial para desenvolvedores que desejam ir além do JavaScript.",
     thumbnailUrl: "/1.jpg",
@@ -37,7 +32,7 @@ export const blogPosts: BlogPost[] = [
     slug: "dicas-de-tailwind-css",
     title: "5 Dicas Essenciais de Tailwind CSS",
     author: "Maria Oliveira",
-    date: "08 de Setembro, 2024",
+    date: "08 de Setembro, 2025",
     summary:
       "Aprenda a otimizar seu fluxo de trabalho e construir interfaces responsivas de forma mais rápida e eficiente utilizando as classes utilitárias do Tailwind.",
     thumbnailUrl: "/2.jpg",
@@ -59,7 +54,7 @@ export const blogPosts: BlogPost[] = [
     slug: "gerenciando-estado-com-react",
     title: "Gerenciamento de Estado no React (e Next.js)",
     author: "Pedro Rocha",
-    date: "05 de Setembro, 2024",
+    date: "05 de Setembro, 2025",
     summary:
       "Uma visão geral das diferentes abordagens para gerenciar o estado da sua aplicação, de useState a contextos e bibliotecas como Zustand.",
     thumbnailUrl: "/3.jpg",
@@ -77,7 +72,7 @@ export const blogPosts: BlogPost[] = [
     slug: "comece-com-firebase",
     title: "Comece com Firebase: Seu Backend na Nuvem",
     author: "Fernanda Rosas",
-    date: "18 de Setembro, 2024",
+    date: "18 de Setembro, 2025",
     summary:
       "Um guia rápido sobre como configurar e usar o Firebase para adicionar funcionalidades de backend, como banco de dados em tempo real e autenticação, ao seu projeto Next.js.",
     thumbnailUrl: "/4.jpg",
@@ -92,7 +87,7 @@ export const blogPosts: BlogPost[] = [
     slug: "estilizando-com-tailwind-typography",
     title: "Estilizando Conteúdo com Tailwind Typography",
     author: "Fernanda Rosas",
-    date: "20 de Setembro, 2024",
+    date: "20 de Setembro, 2025",
     summary:
       "Aprenda a usar o plugin @tailwindcss/typography para estilizar automaticamente blocos de conteúdo HTML com estilos tipográficos elegantes e consistentes.",
     thumbnailUrl: "/5.jpg",
@@ -107,7 +102,7 @@ export const blogPosts: BlogPost[] = [
     slug: "dicas-essenciais-para-o-hook-useeffect",
     title: "Dicas Essenciais para Usar o `useEffect` Corretamente",
     author: "Fernanda Rosas",
-    date: "15 de Setembro, 2024",
+    date: "15 de Setembro, 2025",
     summary:
       "Neste post, exploraremos o hook useEffect em React, um guia para entender seu ciclo de vida, como gerenciar dependências, e a importância de limpar os efeitos para um código limpo e eficiente.",
     thumbnailUrl: "/6.jpg",

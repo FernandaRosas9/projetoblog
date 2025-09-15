@@ -1,6 +1,4 @@
-"use client";
 import Header from "@/app/components/Header";
-import { useState } from "react";
 import "./globals.css";
 
 export default function RootLayout({
@@ -8,12 +6,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <html lang="pt-br">
       <body className="bg-[#8E6EAD] bg-[url('/bg.jpg')] bg-cover bg-center bg-fixed bg-blend-multiply">
-        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <Header/>
         {children}
       </body>
     </html>

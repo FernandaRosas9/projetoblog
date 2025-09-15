@@ -1,72 +1,68 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import BlogPostCard from "@/app/components/Cards";
-import { blogPosts, BlogPost } from "@/lib/blogPost";
-import Link from "next/link";
+import { blogPosts } from "@/lib/blogPost";
 import Image from "next/image";
 
-export default function Home() {
-  const [filter, setFilter] = useState("all");
-  const [searchTerm] = useState("");
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
-  const [reactionTrigger, setReactionTrigger] = useState(0);
+type FilterOption = "all" | "faved" | "loved";
 
-  const handleReaction = () => {
-    setReactionTrigger((prev) => prev + 1);
-  };
+export default function Home() {
+  const [filter, setFilter] = useState<FilterOption>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [reactionTrigger, setReactionTrigger] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Verifica o userId no localStorage ou cria um novo
     let currentUserId = localStorage.getItem("userId");
     if (!currentUserId) {
       currentUserId = `anon-${Math.random().toString(36).slice(2, 11)}`;
       localStorage.setItem("userId", currentUserId);
     }
+    setUserId(currentUserId);
+  }, []);
 
-    let postsToFilter = blogPosts;
+  const onReaction = () => {
+    setReactionTrigger((prev) => prev + 1);
+  };
+
+  const filteredPosts = useMemo(() => {
+    const userFaved = userId
+      ? Object.keys(localStorage)
+          .filter((key) => key.startsWith(`faved-${userId}`))
+          .map((key) => key.substring(`faved-${userId}-`.length))
+      : [];
+    const userLoved = userId
+      ? Object.keys(localStorage)
+          .filter((key) => key.startsWith(`loved-${userId}`))
+          .map((key) => key.substring(`loved-${userId}-`.length))
+      : [];
+
+    let filtered = blogPosts;
 
     if (filter === "faved") {
-      const favedSlugs = blogPosts
-        .filter(
-          (post) =>
-            localStorage.getItem(`faved-${currentUserId}-${post.slug}`) ===
-            "true"
-        )
-        .map((post) => post.slug);
-      postsToFilter = blogPosts.filter((post) =>
-        favedSlugs.includes(post.slug)
-      );
+      filtered = blogPosts.filter((post) => userFaved.includes(post.slug));
     } else if (filter === "loved") {
-      const lovedSlugs = blogPosts
-        .filter(
-          (post) =>
-            localStorage.getItem(`loved-${currentUserId}-${post.slug}`) ===
-            "true"
-        )
-        .map((post) => post.slug);
-      postsToFilter = blogPosts.filter((post) =>
-        lovedSlugs.includes(post.slug)
-      );
+      filtered = blogPosts.filter((post) => userLoved.includes(post.slug));
     }
 
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const searchedPosts = postsToFilter.filter(
-      (post) =>
-        post.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-        (post.summary &&
-          post.summary.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        post.author.toLowerCase().includes(lowerCaseSearchTerm)
-    );
-
-    setFilteredPosts(searchedPosts);
-  }, [filter, searchTerm, reactionTrigger]);
+    if (searchTerm) {
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (post) =>
+          post.title.toLowerCase().includes(lowercasedSearchTerm) ||
+          (post.summary &&
+            post.summary.toLowerCase().includes(lowercasedSearchTerm)) ||
+          post.author.toLowerCase().includes(lowercasedSearchTerm)
+      );
+    }
+    return filtered;
+  }, [filter, searchTerm, reactionTrigger, userId]);
 
   return (
     <>
-      <div className="space-y-8 container mx-auto px-4 py-8">
-        {/* Seção de Título, Imagem e Parágrafo - Exclusiva da Página Inicial */}
-        <div className="text-center flex flex-col items-center">
+      <main className="container mx-auto px-4 py-8">
+        <div className="space-y-8 text-center flex flex-col items-center">
           <Image
             src="/logo.png"
             alt="logo do blog"
@@ -78,14 +74,19 @@ export default function Home() {
             Últimos posts, dicas e inspirações de tecnologia.
           </p>
         </div>
-
-        {/* Botões de Filtro */}
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center md:justify-end space-x-4 mb-8">
+          <input
+            type="text"
+            placeholder="Buscar posts por título, autor ou resumo..."
+            className="bg-white w-full m-1 px-5 py-1 text-md border-2 border-white rounded-full shadow-sm focus:outline-none focus:border-indigo-500 transition-colors"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <button
             onClick={() => setFilter("all")}
-            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-full font-medium ${
               filter === "all"
-                ? "bg-indigo-600 text-white shadow-md"
+                ? "bg-indigo-600 text-white shadow"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
@@ -93,9 +94,9 @@ export default function Home() {
           </button>
           <button
             onClick={() => setFilter("faved")}
-            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-full font-medium ${
               filter === "faved"
-                ? "bg-yellow-500 text-white shadow-md"
+                ? "bg-indigo-600 text-white shadow"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
@@ -103,45 +104,31 @@ export default function Home() {
           </button>
           <button
             onClick={() => setFilter("loved")}
-            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+            className={`px-4 py-2 rounded-full font-medium ${
               filter === "loved"
-                ? "bg-[#DD68FA] text-white shadow-md"
+                ? "bg-indigo-600 text-white shadow"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
             Amados
           </button>
         </div>
-
-        {/* Grid de posts */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.length > 0 ? (
-            filteredPosts.map((post: BlogPost) => (
+            filteredPosts.map((post) => (
               <BlogPostCard
-                key={post.id}
+                key={post.slug}
                 post={post}
-                onReaction={handleReaction}
+                onReaction={onReaction}
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-10">
-              <p className="text-lg text-gray-600">
-                Nenhum post encontrado com este filtro.
-              </p>
+            <div className="col-span-full text-center text-gray-500 text-xl py-10">
+              Nenhum post encontrado.
             </div>
           )}
         </div>
-
-        {/* Link para a página "Sobre" */}
-        <div className="text-center mt-10">
-          <Link
-            href="/about"
-            className="text-indigo-600 hover:underline font-medium"
-          >
-            Leia mais sobre o projeto &rarr;
-          </Link>
-        </div>
-      </div>
+      </main>
     </>
   );
 }
