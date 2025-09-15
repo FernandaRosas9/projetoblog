@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  A regra @font-face importa a fonte para uso no CSS.
+*/
+@font-face {
+  font-family: 'RainyHearts';
+  src: url('/rainyhearts.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'VCR OSD';
+  src: url('/VCR.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: 'Determination Sans';
+  src: url('/determination.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/*
+  Aplicamos a fonte ao 'body' para que ela seja a fonte padrão em todo o blog.
+*/
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'RainyHearts', sans-serif;
 }
+
+/*
+  O 'prose' agora usará a fonte padrão do body.
+*/
+.prose {
+  @apply text-gray-700;
+}
+
+.font-vcr {
+  font-family: 'VCR OSD', sans-serif;
+}
+
+.font-determination {
+  font-family: 'Determination Sans', sans-serif;
+}
+
+

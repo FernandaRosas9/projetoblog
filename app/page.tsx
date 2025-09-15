@@ -1,103 +1,147 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import BlogPostCard from "@/app/components/Cards";
+import { blogPosts, BlogPost } from "@/lib/blogPost";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [filter, setFilter] = useState("all");
+  const [searchTerm] = useState("");
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [reactionTrigger, setReactionTrigger] = useState(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleReaction = () => {
+    setReactionTrigger((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    // Verifica o userId no localStorage ou cria um novo
+    let currentUserId = localStorage.getItem("userId");
+    if (!currentUserId) {
+      currentUserId = `anon-${Math.random().toString(36).slice(2, 11)}`;
+      localStorage.setItem("userId", currentUserId);
+    }
+
+    let postsToFilter = blogPosts;
+
+    if (filter === "faved") {
+      const favedSlugs = blogPosts
+        .filter(
+          (post) =>
+            localStorage.getItem(`faved-${currentUserId}-${post.slug}`) ===
+            "true"
+        )
+        .map((post) => post.slug);
+      postsToFilter = blogPosts.filter((post) =>
+        favedSlugs.includes(post.slug)
+      );
+    } else if (filter === "loved") {
+      const lovedSlugs = blogPosts
+        .filter(
+          (post) =>
+            localStorage.getItem(`loved-${currentUserId}-${post.slug}`) ===
+            "true"
+        )
+        .map((post) => post.slug);
+      postsToFilter = blogPosts.filter((post) =>
+        lovedSlugs.includes(post.slug)
+      );
+    }
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const searchedPosts = postsToFilter.filter(
+      (post) =>
+        post.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+        (post.summary &&
+          post.summary.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        post.author.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+
+    setFilteredPosts(searchedPosts);
+  }, [filter, searchTerm, reactionTrigger]);
+
+  return (
+    <>
+      <div className="space-y-8 container mx-auto px-4 py-8">
+        {/* Seção de Título, Imagem e Parágrafo - Exclusiva da Página Inicial */}
+        <div className="text-center flex flex-col items-center">
+          <Image
+            src="/logo.png"
+            alt="logo do blog"
+            width={400}
+            height={200}
+            className="mb-4"
+          />
+          <p className="text-xl text-white">
+            Últimos posts, dicas e inspirações de tecnologia.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Botões de Filtro */}
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => setFilter("all")}
+            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+              filter === "all"
+                ? "bg-indigo-600 text-white shadow-md"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setFilter("faved")}
+            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+              filter === "faved"
+                ? "bg-yellow-500 text-white shadow-md"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Favoritos
+          </button>
+          <button
+            onClick={() => setFilter("loved")}
+            className={`py-2 px-6 rounded-md font-semibold transition-colors ${
+              filter === "loved"
+                ? "bg-[#DD68FA] text-white shadow-md"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Amados
+          </button>
+        </div>
+
+        {/* Grid de posts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map((post: BlogPost) => (
+              <BlogPostCard
+                key={post.id}
+                post={post}
+                onReaction={handleReaction}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10">
+              <p className="text-lg text-gray-600">
+                Nenhum post encontrado com este filtro.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Link para a página "Sobre" */}
+        <div className="text-center mt-10">
+          <Link
+            href="/about"
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            Leia mais sobre o projeto &rarr;
+          </Link>
+        </div>
+      </div>
+    </>
   );
 }
