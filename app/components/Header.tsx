@@ -10,7 +10,7 @@ export default function Header() {
           <li>
             <Link
               href="/"
-              className="hover:text-indigo-600 transition-colors font-medium"
+              className="hover:text-white transition-colors font-medium"
             >
               Home
             </Link>
@@ -18,7 +18,7 @@ export default function Header() {
           <li>
             <Link
               href="/about"
-              className="hover:text-indigo-600 transition-colors font-medium"
+              className="hover:text-white transition-colors font-medium"
             >
               Sobre
             </Link>
